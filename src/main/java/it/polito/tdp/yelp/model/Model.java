@@ -1,6 +1,7 @@
 package it.polito.tdp.yelp.model;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,10 +17,12 @@ public class Model {
 	private Graph<Business,DefaultWeightedEdge> grafo;
 	private YelpDao dao;
 	private Map<String,Business> mapId;
+	private List<Business> best;
 	
 	public Model() {
 		this.dao = new YelpDao();
 		this.mapId = new HashMap<>();
+		this.best = new LinkedList<>();
 	}
 	
 	public List<String> getCities(){
@@ -54,12 +57,10 @@ public class Model {
 		for(DefaultWeightedEdge a : this.grafo.outgoingEdgesOf(b)) {
 			uscenti += this.grafo.getEdgeWeight(a);
 		}
-		//System.out.println(b.getBusinessName()+" "+(entranti-uscenti));
+		
 		return entranti-uscenti;
 		
 	}
-	
-	
 	
 	public Business migliore() {
 		
@@ -86,5 +87,57 @@ public class Model {
 	}
 	
 	
+	public List<Business> calcolarePercorso(Business partenza, Business arrivo, double soglia){
+		List<Business> parziale = new LinkedList<Business>();
+		parziale.add(partenza);
+		ricorsione(arrivo,soglia,parziale);
+		return best;
+		
+	}
+
+	private void ricorsione(Business arrivo, double soglia, List<Business> parziale) {
+	
+		//sonoArrivatoADestinazione
+		if(parziale.get(parziale.size()-1).equals(arrivo)==true) {
+			if(best.size()==0) {
+				best = new LinkedList<>(parziale);
+                return;
+			}else {
+				if(parziale.size() < best.size()) {
+					best = new LinkedList<>(parziale);
+				}
+			}
+			return;
+		}
+		
+		for(Business b : successiviPossibili(parziale, soglia)) {
+			if(!parziale.contains(b)) {
+				parziale.add(b);
+				ricorsione(arrivo, soglia, parziale);
+				parziale.remove(parziale.size()-1);
+			}
+		}
+		
+		
+	}
+	
+	public List<Business> successiviPossibili(List<Business> parziale, double soglia){
+		
+		List<Business> successivi = new LinkedList<>();
+		
+		for(DefaultWeightedEdge d : this.grafo.outgoingEdgesOf(parziale.get(parziale.size()-1))) {
+			if(this.grafo.getEdgeWeight(d)>soglia) {
+				successivi.add(Graphs.getOppositeVertex(this.grafo, d, parziale.get(parziale.size()-1)));
+			}
+		}
+		
+		return successivi;
+	}
+
+	
+	public List<Business> vertici(){
+		List<Business> v = new LinkedList<>(this.grafo.vertexSet());
+		return v;
+	}
 	
 }

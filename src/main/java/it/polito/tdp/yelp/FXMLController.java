@@ -5,6 +5,7 @@
 package it.polito.tdp.yelp;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.yelp.model.Business;
@@ -45,14 +46,24 @@ public class FXMLController {
     private ComboBox<Integer> cmbAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbLocale"
-    private ComboBox<?> cmbLocale; // Value injected by FXMLLoader
+    private ComboBox<Business> cmbLocale; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
+    	Business partenza = cmbLocale.getValue();
+    	Business arrivo = model.migliore();
+    	double soglia = Double.parseDouble(txtX.getText());
+    	List<Business> percorso = model.calcolarePercorso(partenza, arrivo, soglia);
     	
+    	if(percorso.size() == 0) {
+    		txtResult.appendText("Non è possibile trovare un percorso");
+    	}else {
+     	txtResult.appendText(percorso.toString());
+    	   	}
+
     }
 
     @FXML
@@ -69,6 +80,7 @@ public class FXMLController {
        txtResult.clear();
        Business migliore = model.migliore();
        txtResult.appendText(migliore.getBusinessName());
+       cmbLocale.getItems().addAll(model.vertici());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
