@@ -7,6 +7,7 @@ package it.polito.tdp.yelp;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.yelp.model.Business;
 import it.polito.tdp.yelp.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,13 +36,13 @@ public class FXMLController {
     private Button btnPercorso; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbCitta"
-    private ComboBox<?> cmbCitta; // Value injected by FXMLLoader
+    private ComboBox<String> cmbCitta; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtX"
     private TextField txtX; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbAnno"
-    private ComboBox<?> cmbAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbLocale"
     private ComboBox<?> cmbLocale; // Value injected by FXMLLoader
@@ -57,11 +58,17 @@ public class FXMLController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
 
+    	String city = cmbCitta.getValue();
+    	int anno = cmbAnno.getValue();
+    	String msg = model.creaGrafo(city, anno);
+    	txtResult.appendText(msg);
     }
 
     @FXML
     void doLocaleMigliore(ActionEvent event) {
-
+       txtResult.clear();
+       Business migliore = model.migliore();
+       txtResult.appendText(migliore.getBusinessName());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -78,5 +85,16 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	cmbAnno.getItems().add(2005);
+    	cmbAnno.getItems().add(2006);
+    	cmbAnno.getItems().add(2007);
+    	cmbAnno.getItems().add(2008);
+    	cmbAnno.getItems().add(2009);
+    	cmbAnno.getItems().add(2010);
+    	cmbAnno.getItems().add(2011);
+    	cmbAnno.getItems().add(2012);
+    	cmbAnno.getItems().add(2013);
+    
+    	cmbCitta.getItems().addAll(model.getCities());
     }
 }
