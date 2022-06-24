@@ -53,6 +53,7 @@ public class FXMLController {
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
+        txtResult.clear();
     	Business partenza = cmbLocale.getValue();
     	Business arrivo = model.migliore();
     	double soglia = Double.parseDouble(txtX.getText());
